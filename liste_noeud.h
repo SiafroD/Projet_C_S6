@@ -11,7 +11,7 @@
 typedef struct noeud_t {
     noeud_id_t noeud; // Identifiant du noeud
     double distance; // Distance depuis un noeud source
-    struct noeud_t* suivant; // Pointeur vers le prochain élément de la liste
+    noeud_t* prec; // Pointeur vers le noeud précédent de la liste
 } noeud_t;
 
 
