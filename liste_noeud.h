@@ -5,17 +5,16 @@
 typedef struct noeud_t {
     noeud_id_t noeud; // Identifiant du noeud
     double distance; // Distance depuis un noeud source
-    noeud_id_t* prec; // Pointeur vers le noeud précédent de la liste
+    noeud_id_t prec; // Id du noeud précédent de la liste
+    struct noeud_t* suivant;
 } noeud_t;
 
 
 
-// TODO : type liste_noeud_t
 typedef struct liste_noeud_t {
     noeud_t* tete; // Pointeur vers le premier élément de la liste
 } liste_noeud_t;
 
-// TODO : typedef
 
 /**
  * creer_liste : crée une liste de noeuds, initialement vide
@@ -33,7 +32,7 @@ liste_noeud_t* creer_liste();
  *
  * @param liste_ptr pointeur sur la liste à détruire
  */
-void detruire_liste(liste_noeud_t* liste_ptr);
+void detruire_liste(liste_noeud_t** liste_ptr);
 
 /**
  * est_vide_liste : test si la liste passée en paramètre est vide
