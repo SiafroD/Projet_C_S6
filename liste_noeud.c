@@ -3,11 +3,11 @@
 #include <stdlib.h>
 #include <math.h>
 
-/* TODO */
 
-static liste_noeud_t creer_liste() {
-    liste_noeud_t nouvelle_liste = malloc(sizeof(liste_noeud_t));
-    if (nouvelle_liste == NULL) {
+
+liste_noeud_t* creer_liste() {
+    liste_noeud_t* nouvelle_liste = malloc(sizeof(liste_noeud_t));
+    if (&nouvelle_liste == NULL) {
         // Gestion de l'erreur d'allocation de mémoire ou allocation de mémoire
         // de taille 0.
         return NULL;
@@ -19,33 +19,33 @@ static liste_noeud_t creer_liste() {
 
 
 
-static void detruire_liste(liste_noeud_t* liste_ptr){
+void detruire_liste(liste_noeud_t* liste_ptr){
 
-    noeud_t* act = (*liste_ptr)->tete;
+    noeud_t* act = liste_ptr->tete;
     noeud_t* prec;
     // Parcourir la liste est libére les noeuds les uns après les autres.
-    while (prec != NULL) {
+    while (act != NULL) {
         prec = act->prec;
         free(act);
         act = prec;
     }
-    free(*liste_ptr);
+    free(liste_ptr);
     liste_ptr = NULL;
 }
 
 
 
 
-static bool est_vide_liste(liste_noeud_t liste_noeuds) {
+bool est_vide_liste(liste_noeud_t* liste_noeuds) {
     return liste_noeuds->tete == NULL;
 }
 
 
 
 
-static bool contient_noeud_liste(const liste_noeud_t* liste, noeud_id_t id_noeud) {
+bool contient_noeud_liste(const liste_noeud_t* liste, int id_noeud) {
 
-    noeud_t* act = (*liste)->tete;
+    noeud_t* act = liste->tete;
     noeud_t* prec;
 
     // Si le noeud cherché est le 1er
@@ -66,9 +66,9 @@ static bool contient_noeud_liste(const liste_noeud_t* liste, noeud_id_t id_noeud
 
 
 
-static bool contient_arrete_liste(const liste_noeud_t* liste, noeud_id_t source, noeud_id_t destination) {
+ bool contient_arrete_liste(const liste_noeud_t* liste, int source, int destination) {
 
-    noeud_t* act = (*liste)->tete;
+    noeud_t* act = liste->tete;
     noeud_t* prec;
 
     while (prec != NULL) {
@@ -83,31 +83,28 @@ static bool contient_arrete_liste(const liste_noeud_t* liste, noeud_id_t source,
 
 
 
-static double distance_noeud_liste(liste_noeud_t liste_noeud, noeud_t noeud) {
+double distance_noeud_liste(liste_noeud_t* liste_noeud, int noeud) {
 
     noeud_t* act = liste_noeud->tete;
-    noeud_id_t id_noeud = noeud.noeud;
-
     while (act != NULL) {
-        if (act->noeud == id_noeud) { 
+        if (act->noeud == noeud) { 
             return act->distance;
         }
         act = act->prec;
     }
     return INFINITY;
-    }
+}
 
 
 
 
-static noeud_t precedent_noeud_liste(liste_noeud_t liste_noeud, noeud_t noeud) {
+int precedent_noeud_liste(liste_noeud_t* liste_noeud, int noeud) {
     noeud_t* act = liste_noeud->tete;
-    noeud_id_t id_noeud = noeud.noeud;
 
     while (act != NULL) {
         // Si les indices du noeud actuel et cherché sont égaux
-        if (act->noeud == id_noeud) { 
-            return *act->prec;
+        if (act->noeud == noeud) { 
+            return act->prec;
         }
         act = act->prec;
     }
@@ -118,7 +115,7 @@ static noeud_t precedent_noeud_liste(liste_noeud_t liste_noeud, noeud_t noeud) {
 
 
 
-static noeud_t min_noeud_liste(liste_noeud_t liste_noeud) {
+int min_noeud_liste(liste_noeud_t* liste_noeud) {
     double min = INFINITY;
     noeud_t* id_min;
     noeud_t* act = liste_noeud->tete;
@@ -130,13 +127,13 @@ static noeud_t min_noeud_liste(liste_noeud_t liste_noeud) {
         }
         act = act->prec;
     }
-    return *id_min;
+    return id_min;
 }
 
 
 
 
-static void inserer_noeud_liste(liste_noeud_t liste_noeud, noeud_t noeud, noeud_t precedent, double distance) {
+void inserer_noeud_liste(liste_noeud_t* liste_noeud, int noeud, int precedent, double distance) {
         // Créer un nouveau noeud
     noeud_t* nouveau_noeud = malloc(sizeof(noeud_t));
     if (nouveau_noeud == NULL) {
@@ -144,7 +141,7 @@ static void inserer_noeud_liste(liste_noeud_t liste_noeud, noeud_t noeud, noeud_
         return;
     }
         // Etablir les paramètres de ce noeud
-    nouveau_noeud->noeud = noeud.noeud;
+    nouveau_noeud->noeud = noeud;
     nouveau_noeud->distance = distance;
     nouveau_noeud->prec = NULL;
 
@@ -157,7 +154,7 @@ static void inserer_noeud_liste(liste_noeud_t liste_noeud, noeud_t noeud, noeud_
     // Insertion à une position spécifique
     noeud_t* act = liste_noeud->tete;
     while (act != NULL) {
-        if (act->noeud == precedent.noeud) {
+        if (act->noeud == precedent) {
             nouveau_noeud->prec = act; // MAJ du paramètre prec du nouveau noeud pour que ça soit le noeud
                                        // en entrée
             act->prec = nouveau_noeud; // Insérer le nouveau noeud après le noeud précédent
@@ -177,13 +174,13 @@ static void inserer_noeud_liste(liste_noeud_t liste_noeud, noeud_t noeud, noeud_
 
 
 
-static void changer_noeud_liste(liste_noeud_t liste_noeud, noeud_t noeud, noeud_t precedent, double distance) {
+void changer_noeud_liste(liste_noeud_t* liste_noeud, int noeud, int precedent, double distance) {
     bool present = false;
     noeud_t* act = liste_noeud->tete;
 
 // Recherche du noeud à modifier
     while (act != NULL) {
-        if (act->noeud == noeud.noeud) {
+        if (act->noeud == noeud) {
             present = true;
             act->distance = distance;
             act->prec = &precedent;
@@ -195,12 +192,12 @@ static void changer_noeud_liste(liste_noeud_t liste_noeud, noeud_t noeud, noeud_
     }
 }
 
-static void supprimer_noeud_liste(liste_noeud_t liste_noeud, noeud_t noeud) {
+void supprimer_noeud_liste(liste_noeud_t* liste_noeud, int noeud) {
     noeud_t* act = liste_noeud->tete;
     noeud_t* precedent = NULL;
     // On a egalement besoin du noeud précédent pour supprimer.
 
-    while (act != NULL && act->noeud == noeud.noeud) {
+    while (act != NULL && act->noeud == noeud) {
         precedent = act;
         act = act->prec; // On a donc dans act le noeud actuel qu'il faut supprimer
                          // et dans prec son précédent.
@@ -217,7 +214,6 @@ static void supprimer_noeud_liste(liste_noeud_t liste_noeud, noeud_t noeud) {
         precedent->prec = act->prec; // Décalage des précédents pour conserver le lien de 
                                      // passage d'une cellule à la suivante
     }
-
     //Libère la mémoire du noeud supprimé
     free(act);
 }
