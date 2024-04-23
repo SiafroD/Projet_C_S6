@@ -6,33 +6,34 @@
 
 
 liste_noeud_t* creer_liste() {
+
     liste_noeud_t* nouvelle_liste = malloc(sizeof(liste_noeud_t));
-    if (&nouvelle_liste == NULL) {
-        // Gestion de l'erreur d'allocation de mémoire ou allocation de mémoire
-        // de taille 0.
-        return NULL;
-    }
+
     nouvelle_liste->tete = NULL; // Initialisation de la liste comme vide
     return nouvelle_liste;
 }
 
 
+void detruire_liste(liste_noeud_t** liste_ptr) {
+    noeud_t* cell_sui;
 
+    if ((*liste_ptr)->tete != NULL) {
+        noeud_t* cell_tete = (*liste_ptr)->tete;
 
-void detruire_liste(liste_noeud_t* liste_ptr){
+        cell_sui = cell_tete->suivant;
+        cell_tete->suivant = NULL;
 
-    noeud_t* act = liste_ptr->tete;
-    noeud_t* prec;
-    // Parcourir la liste est libére les noeuds les uns après les autres.
-    while (act != NULL) {
-        prec = act->prec;
-        free(act);
-        act = prec;
+        free(cell_tete);
+        (*liste_ptr)->tete = cell_sui;
+
+        // par récurence
+        detruire_liste(liste_ptr);
+    } else {
+       free(*liste_ptr);
+        *liste_ptr = NULL;
+
     }
-    free(liste_ptr);
-    liste_ptr = NULL;
 }
-
 
 
 
@@ -45,20 +46,14 @@ bool est_vide_liste(liste_noeud_t* liste_noeuds) {
 
 bool contient_noeud_liste(const liste_noeud_t* liste, int id_noeud) {
 
-    noeud_t* act = liste->tete;
-    noeud_t* prec;
+    noeud_t* prec = liste->tete;
 
-    // Si le noeud cherché est le 1er
-    if (act->noeud == id_noeud) {
-        return true;
-    }
     // Sinon on parcours la liste pour le chercher
     while (prec != NULL) {
-        prec = act->prec;
-        act = prec;
-        if (act->noeud == id_noeud) {
+        if (prec->noeud == id_noeud) {
             return true;
         }
+        prec = prec->suivant;
     }
     return false;
 }
@@ -69,11 +64,9 @@ bool contient_noeud_liste(const liste_noeud_t* liste, int id_noeud) {
  bool contient_arrete_liste(const liste_noeud_t* liste, int source, int destination) {
 
     noeud_t* act = liste->tete;
-    noeud_t* prec;
 
-    while (prec != NULL) {
-        if ((act->noeud == source && prec->noeud == destination) ||
-        (act->noeud == destination) && (prec->noeud == source )) {
+    while (act != NULL) {
+        if (act->noeud == source && act->prec == destination) {
             return true;
         }
     }
@@ -99,17 +92,16 @@ double distance_noeud_liste(liste_noeud_t* liste_noeud, int noeud) {
 
 
 int precedent_noeud_liste(liste_noeud_t* liste_noeud, int noeud) {
-    noeud_t* act = liste_noeud->tete;
+    noeud_t* suivante = liste_noeud->tete;
 
-    while (act != NULL) {
+    while (suivante != NULL) {
         // Si les indices du noeud actuel et cherché sont égaux
-        if (act->noeud == noeud) { 
-            return act->prec;
+        if (suivante->noeud == noeud) { 
+            return suivante->prec;
         }
-        act = act->prec;
+        suivante = suivante->prec;
     }
-    // Avec un return NULL y'a pas le bon type
-    printf("NO_ID");
+    return NO_ID;
 }
 
 
@@ -129,7 +121,6 @@ int min_noeud_liste(liste_noeud_t* liste_noeud) {
     }
     return id_min;
 }
-
 
 
 
@@ -169,6 +160,7 @@ void inserer_noeud_liste(liste_noeud_t* liste_noeud, int noeud, int precedent, d
         act = act->prec;
     }
     act->prec = nouveau_noeud; // Ajouter le nouveau noeud à la fin
+    return;
 }
 
 
