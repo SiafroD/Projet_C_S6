@@ -1,17 +1,11 @@
 #include "graphe.h"
 #include <stdbool.h>
 
-
-// FAUT-IL RENVOYER UN TYPE NOEUD OU L'INDICE DU NOEUD?
-
-
-
-
 // Structure pour les éléments de la liste chaînée
 typedef struct noeud_t {
     noeud_id_t noeud; // Identifiant du noeud
     double distance; // Distance depuis un noeud source
-    noeud_t* prec; // Pointeur vers le noeud précédent de la liste
+    noeud_id_t* prec; // Pointeur vers le noeud précédent de la liste
 } noeud_t;
 
 
@@ -22,7 +16,6 @@ typedef struct liste_noeud_t {
 } liste_noeud_t;
 
 // TODO : typedef
-typedef liste_noeud_t* liste_noeud_t;
 
 /**
  * creer_liste : crée une liste de noeuds, initialement vide
@@ -30,7 +23,7 @@ typedef liste_noeud_t* liste_noeud_t;
  * Post-conditions : `r = creer_liste()` => `r != NULL`, `est_vide_liste(r)`
  * @return liste nouvellement créée (de type liste_noeud_t)
  */
-liste_noeud_t creer_liste();
+liste_noeud_t* creer_liste();
 
 /**
  * detruire_liste : détruit la liste passée en paramètre
@@ -47,10 +40,10 @@ void detruire_liste(liste_noeud_t* liste_ptr);
  *
  * Pré-conditions : liste != NULL
  *
- * @param liste [in] liste à tester
+ * @param liste_noeuds [in] liste à tester
  * @return vrai ssi la liste ne contient aucun élément
  */
-bool est_vide_liste(liste_noeud_t liste_noeuds);
+bool est_vide_liste(liste_noeud_t* liste_noeuds);
 
 /**
  * contient_noeud_liste : test si le noeud donné appartient à la liste donnée.
@@ -61,7 +54,7 @@ bool est_vide_liste(liste_noeud_t liste_noeuds);
  * @param noeud noeud à rechercher
  * @return vrai ssi noeud est dans liste
  */
-bool contient_noeud_liste(const liste_noeud_t* liste, noeud_id_t noeud);
+bool contient_noeud_liste(const liste_noeud_t* liste, int noeud);
 
 /**
  * contient_arrete_liste : test si l'arrête donnée appartient à la liste donnée.
@@ -75,7 +68,7 @@ bool contient_noeud_liste(const liste_noeud_t* liste, noeud_id_t noeud);
  * @param destination noeud destination de l'arrête
  * @return vrai ssi l'arrête (source,destination) est dans liste
  */
-bool contient_arrete_liste(const liste_noeud_t* liste, noeud_id_t source, noeud_id_t destination);
+bool contient_arrete_liste(const liste_noeud_t* liste, int source, int destination);
 
 /**
  * distance_noeud_liste : récupère la distance associée au noeud donné dans la liste donnée.
@@ -88,7 +81,7 @@ bool contient_arrete_liste(const liste_noeud_t* liste, noeud_id_t source, noeud_
  * @param noeud noeud dont on veut la distance
  * @return distance associée à noeud dans liste ou INFINITY si noeud n'est pas dans liste
  */
-double distance_noeud_liste(liste_noeud_t liste_noeud, noeud_t noeud);
+double distance_noeud_liste(liste_noeud_t* liste_noeud, int noeud);
 
 /**
  * precedent_noeud_liste : récupère le noeud précédent associé au noeud donné dans la liste donnée.
@@ -101,7 +94,7 @@ double distance_noeud_liste(liste_noeud_t liste_noeud, noeud_t noeud);
  * @param noeud noeud dont on veut le précédent
  * @return précédent associé au noeud dans la liste (ou `NO_ID` si noeud n'est pas dans liste)
  */
-noeud_t precedent_noeud_liste(liste_noeud_t liste_noeud, noeud_t noeud);
+int precedent_noeud_liste(liste_noeud_t* liste_noeud, int noeud);
 
 /**
  * min_noeud_liste : trouve le (un) noeud de la liste dont la distance associée est la plus petite,
@@ -114,7 +107,7 @@ noeud_t precedent_noeud_liste(liste_noeud_t liste_noeud, noeud_t noeud);
  * @param liste [in] liste à parcourir
  * @return noeud qui minimise la distance, ou `NO_ID` si pas de noeud
  */
-noeud_t min_noeud_liste(liste_noeud_t liste_noeud);
+int min_noeud_liste(liste_noeud_t* liste_noeud);
 
 /**
  * inserer_noeud_liste : insère le noeud donné dans la liste
@@ -126,7 +119,7 @@ noeud_t min_noeud_liste(liste_noeud_t liste_noeud);
  * @param precedent noeud précédent du noeud à insérer (prec(n))
  * @param distance distance du noeud à insérer (dist(n))
  */
-void inserer_noeud_liste(liste_noeud_t liste_noeud, noeud_t noeud, noeud_t precedent, double distance);
+void inserer_noeud_liste(liste_noeud_t* liste_noeud, int noeud, int precedent, double distance);
 
 /**
  * changer_noeud_liste : modifie les valeurs associées au noeud donné dans la liste donnée.
@@ -143,7 +136,7 @@ void inserer_noeud_liste(liste_noeud_t liste_noeud, noeud_t noeud, noeud_t prece
  * @param precedent nouveau noeud précédent pour noeud
  * @param distance nouvelle distance pour noeud
  */
-void changer_noeud_liste(liste_noeud_t liste_noeud, noeud_t noeud, noeud_t precedent, double distance);
+void changer_noeud_liste(liste_noeud_t* liste_noeud, int noeud, int precedent, double distance);
 
 /**
  * supprimer_noeud_liste : supprime le noeud donné de la liste. Si le noeud n'est pas dans la liste,
@@ -155,6 +148,7 @@ void changer_noeud_liste(liste_noeud_t liste_noeud, noeud_t noeud, noeud_t prece
  * @param liste [in,out] liste à modifier
  * @param noeud noeud à supprimer de liste
  */
-void supprimer_noeud_liste(liste_noeud_t liste_noeud, noeud_t noeud);
+void supprimer_noeud_liste(liste_noeud_t* liste_noeud, int noeud);
+
 
 
